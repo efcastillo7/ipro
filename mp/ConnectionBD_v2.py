@@ -14,7 +14,7 @@ class DB(object):
 			self.conn = pymysql.connect(host='localhost',
                              user='root',
                              password='Swsh123$',
-                             db='PruebaDB')
+                             db='IProDB')
 			self.cursor = self.conn.cursor()
 			if (self.conn):
 
@@ -54,6 +54,18 @@ def createTablePort():
 
 	return True
 
+def createTableFlow():
+
+	sql = DB()
+	cursor = sql.cursor
+
+	cursor.execute('''CREATE TABLE IF NOT EXISTS tbl_stats_flow (id_datapath text, in_port text, eth_dst text,
+		out_port text, packets text, bytes text)''')
+
+	sql.close()
+
+	return True	
+
 # To insert a statistic reply event from switch in the DB
 def insertSensorEvent(sensor):
 	sql = DB()
@@ -77,3 +89,14 @@ def insertStatPort(statPort):
 	if statPort['port_number'] != 4294967294:
 		sql.conn.commit()
 	sql.close()
+
+def insertStatFlow(statFlow):
+	sql = DB()
+	query = "INSERT INTO `tbl_stats_flow` (`id_datapath`, `in_port`, `eth_dst`, `out_port`, `packets`, `bytes`) VALUES (%s, %s,%s, %s,%s, %s)"
+
+	sql.cursor.execute(query, (statFlow['id_datapath'],statFlow['in_port'],statFlow['eth_dst'],
+		statFlow['out_port'],statFlow['packets'],statFlow['bytes']))
+	
+	#if statPort['port_number'] != 4294967294:
+	sql.conn.commit()
+	sql.close()	
